@@ -5,17 +5,17 @@
   
 
   
-  <title>Hexo</title>
+  <title>LK820的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
+<meta property="og:title" content="LK820的博客">
 <meta property="og:url" content="http://yoursite.com/index.html">
-<meta property="og:site_name" content="Hexo">
+<meta property="og:site_name" content="LK820的博客">
 <meta property="og:locale" content="default">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hexo">
+<meta name="twitter:title" content="LK820的博客">
   
-    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+    <link rel="alternate" href="/atom.xml" title="LK820的博客" type="application/atom+xml">
   
   
     <link rel="icon" href="/favicon.png">
@@ -34,7 +34,7 @@
   <div id="header-outer" class="outer">
     <div id="header-title" class="inner">
       <h1 id="logo-wrap">
-        <a href="/" id="logo">Hexo</a>
+        <a href="/" id="logo">LK820的博客</a>
       </h1>
       
     </div>
@@ -76,7 +76,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/01/30/你媽的-爲什麽/">你媽的 爲什麽</a>
+      <a class="article-title" href="/2019/01/30/你媽的-爲什麽/">如何中断axios请求</a>
     </h1>
   
 
@@ -84,11 +84,17 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <p>当需要中断一个或多个axios请求（如上传大文件），需要用 axios<br><a href="https://github.com/axios/axios#cancellation" target="_blank" rel="noopener">CancelToken</a></p>
+<h3 id="axios官方文档示例"><a href="#axios官方文档示例" class="headerlink" title="axios官方文档示例"></a>axios官方文档示例</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//通过传递一个 executor 函数到 CancelToken 的构造函数来创建 cancel token：</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> CancelToken = axios.CancelToken;</span><br><span class="line"><span class="keyword">var</span> cancel;</span><br><span class="line"></span><br><span class="line">axios.get(<span class="string">'/user/12345'</span>, &#123;</span><br><span class="line">  cancelToken: <span class="keyword">new</span> CancelToken(<span class="function"><span class="keyword">function</span> <span class="title">executor</span>(<span class="params">c</span>) </span>&#123;</span><br><span class="line">    <span class="comment">// executor 函数接收一个 cancel 函数作为参数</span></span><br><span class="line">    cancel = c;</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 取消请求</span></span><br><span class="line">cancel();</span><br></pre></td></tr></table></figure>
+<h3 id="实际项目中"><a href="#实际项目中" class="headerlink" title="实际项目中"></a>实际项目中</h3><h5 id="首先需要单独引入axios，已配置的axios文件http-js-export-default-没有包含-CancelToken"><a href="#首先需要单独引入axios，已配置的axios文件http-js-export-default-没有包含-CancelToken" class="headerlink" title="首先需要单独引入axios，已配置的axios文件http.js export default 没有包含 CancelToken"></a>首先需要单独引入axios，已配置的axios文件http.js export default 没有包含 CancelToken</h5><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> axios <span class="keyword">from</span> <span class="string">'axios'</span></span><br></pre></td></tr></table></figure>
+<h5 id="定义一个-cancelArr-用于存放多个-cancel-函数，单独中止请求时获取索引来执行：-this-cancelArr-key"><a href="#定义一个-cancelArr-用于存放多个-cancel-函数，单独中止请求时获取索引来执行：-this-cancelArr-key" class="headerlink" title="定义一个 cancelArr 用于存放多个 cancel 函数，单独中止请求时获取索引来执行： this.cancelArr[key]()"></a>定义一个 cancelArr 用于存放多个 cancel 函数，单独中止请求时获取索引来执行： this.cancelArr[key]()</h5><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">data() &#123;</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">        <span class="comment">//用于存放 cancel 函数</span></span><br><span class="line">        cancelArr:[]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="单独引入-axios-后方可使用-axios-CancelToken"><a href="#单独引入-axios-后方可使用-axios-CancelToken" class="headerlink" title="单独引入 axios 后方可使用 axios.CancelToken"></a>单独引入 axios 后方可使用 axios.CancelToken</h5><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> CancelToken = axios.CancelToken</span><br><span class="line"><span class="keyword">let</span> cancel;</span><br><span class="line"><span class="keyword">let</span> _this = <span class="keyword">this</span>;</span><br><span class="line"><span class="keyword">this</span>.axios.post(<span class="string">'upload'</span>, obj, &#123;</span><br><span class="line">    onUploadProgress: <span class="function"><span class="params">progress</span> =&gt;</span> &#123;</span><br><span class="line">        <span class="comment">//处理进度</span></span><br><span class="line">    &#125;,</span><br><span class="line">    cancelToken:<span class="keyword">new</span> CancelToken(<span class="function"><span class="keyword">function</span> <span class="title">excutor</span>(<span class="params">c</span>)</span>&#123;</span><br><span class="line">        cancel = c;</span><br><span class="line">        <span class="comment">//一个处理函数接受一个cancel函数作为参数</span></span><br><span class="line">        _this.cancelArr.push(cancel)</span><br><span class="line">        <span class="comment">//在已定义的cancelArr数组中放入cancel函数</span></span><br><span class="line">        <span class="built_in">console</span>.log(_this.cancelArr);</span><br><span class="line">        <span class="comment">//上传多个文件时，每增加一个上传文件，cancelArr数组中会多一个cancel函数</span></span><br><span class="line">    &#125;)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<h5 id="根据索引取消单个请求"><a href="#根据索引取消单个请求" class="headerlink" title="根据索引取消单个请求"></a>根据索引取消单个请求</h5><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">cancelRequest(key)&#123;</span><br><span class="line">    <span class="comment">//获取到要中止请求的索引后，执行cancel</span></span><br><span class="line">    <span class="keyword">this</span>.cancelArr[key]()</span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure>
+<h5 id="中止多个请求"><a href="#中止多个请求" class="headerlink" title="中止多个请求"></a>中止多个请求</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">for(let i in this.cancelArr)&#123;</span><br><span class="line">    //遍历 cancelArr，逐个执行</span><br><span class="line">    this.cancelArr[i]()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/01/30/你媽的-爲什麽/" data-id="cjrjc8ume0000d0vwb1xtmyfl" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/01/30/你媽的-爲什麽/" data-id="cjsu8jcjr0000hwvwv5cz2v3u" class="article-share-link">Share</a>
       
       
     </footer>
@@ -133,7 +139,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/01/30/hello-world/" data-id="cjrjc8umn0001d0vw9a55m59f" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/01/30/hello-world/" data-id="cjsu8jckf0001hwvwxaru98qq" class="article-share-link">Share</a>
       
       
     </footer>
@@ -174,7 +180,7 @@
       <ul>
         
           <li>
-            <a href="/2019/01/30/你媽的-爲什麽/">你媽的 爲什麽</a>
+            <a href="/2019/01/30/你媽的-爲什麽/">如何中断axios请求</a>
           </li>
         
           <li>
